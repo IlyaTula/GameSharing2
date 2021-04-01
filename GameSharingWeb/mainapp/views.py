@@ -9,13 +9,10 @@ from .utils import recalc_cart
 from django.db import transaction
 
 from .models import (
-    # Notebook,
-    # Smartphone,
     # Category,
-    # LatestProducts,
     Customer,
     Cart,
-    CartProduct,
+    CartGame,
     GameCategory,
     GameBox,
     GameGetProducts,
@@ -26,7 +23,7 @@ from .models import (
 class BaseView(CartMixin, View):
 
     def get(self, request, *argc, **kwargs):
-        categories=GameCategory.objects.all()
+        categories = GameCategory.objects.all()
         products = GameGetProducts.object.get_products_for_main_page()
         context = {
             'categories': categories,
@@ -34,6 +31,7 @@ class BaseView(CartMixin, View):
             'cart': self.cart
         }
         return render(request, 'base.html', context)
+
 
 class ProductDetailView(CartMixin, ProductDetailMixin, DetailView):
 
@@ -54,6 +52,7 @@ class ProductDetailView(CartMixin, ProductDetailMixin, DetailView):
         context['categories'] = GameCategory.objects.all()
         return context
 
+
 class GameCategoryDetailView(CartMixin, CategoryDetailMixin, DetailView):
     model = GameCategory
     queryset = GameCategory.objects.all()
@@ -65,6 +64,7 @@ class GameCategoryDetailView(CartMixin, CategoryDetailMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context['cart'] = self.cart
         return context
+
 
 # class BaseView(CartMixin, View):
 #
@@ -120,14 +120,12 @@ class GameCategoryDetailView(CartMixin, CategoryDetailMixin, DetailView):
 class AddToCartView(CartMixin, View):
 
     def get(self, request, *argc, **kwargs):
-        ct_model, product_slug = kwargs.get('ct_model'), kwargs.get('slug')
-        content_type = ContentType.objects.get(model=ct_model)
-        product = content_type.model_class().objects.get(slug=product_slug)
-        cart_product, created = CartProduct.objects.get_or_create(
-            user=self.cart.owner, cart=self.cart, content_type=content_type, object_id=product.id
-        )
+        game_slug = kwargs.get('slug')
+        game = Game.objects.get(slug=game_slug)
+        print('User {}'.format(self.cart.owner))
+        cart_game, created = CartGame.objects.get_or_create(user=self.cart.owner, cart=self.cart, game=game)
         if created:
-            self.cart.products.add(cart_product)
+            self.cart.products.add(cart_game)
         recalc_cart(self.cart)
         messages.add_message(request, messages.INFO, "Товар успешно добавлен")
         return HttpResponseRedirect('/cart/')
@@ -136,15 +134,12 @@ class AddToCartView(CartMixin, View):
 class DeleteCartView(CartMixin, View):
 
     def get(self, request, *args, **kwargs):
-        ct_model, product_slug = kwargs.get('ct_model'), kwargs.get('slug')
-        content_type = ContentType.objects.get(model=ct_model)
-        product = content_type.model_class().objects.get(slug=product_slug)
-        cart_product = CartProduct.objects.get(
-            user=self.cart.owner, cart=self.cart, content_type=content_type, object_id=product.id
-        )
+        game_slug = kwargs.get('ct_model'), kwargs.get('slug')
+        game = Game.objects.get(slug=game_slug)
+        cart_game = CartGame.objects.get(user=self.cart.owner, cart=self.cart, game=game)
 
-        self.cart.products.remove(cart_product)
-        cart_product.delete()
+        self.cart.products.remove(cart_game)
+        cart_game.delete()
         recalc_cart(self.cart)
         messages.add_message(request, messages.INFO, "Товар успешно удален")
         return HttpResponseRedirect('/cart/')
@@ -152,15 +147,12 @@ class DeleteCartView(CartMixin, View):
 
 class ChangeQTYView(CartMixin, View):
     def post(self, request, *args, **kwargs):
-        ct_model, product_slug = kwargs.get('ct_model'), kwargs.get('slug')
-        content_type = ContentType.objects.get(model=ct_model)
-        product = content_type.model_class().objects.get(slug=product_slug)
-        cart_product = CartProduct.objects.get(
-            user=self.cart.owner, cart=self.cart, content_type=content_type, object_id=product.id
-        )
+        game_slug = kwargs.get('slug')
+        game = Game.objects.get(slug=game_slug)
+        cart_game = CartGame.objects.get(user=self.cart.owner, cart=self.cart, game=game)
         qty = int(request.POST.get('qty'))
-        cart_product.qty = qty
-        cart_product.save()
+        cart_game.qty = qty
+        cart_game.save()
         recalc_cart(self.cart)
         messages.add_message(request, messages.INFO, "Количество успешно изменено")
         return HttpResponseRedirect('/cart/')
@@ -168,7 +160,6 @@ class ChangeQTYView(CartMixin, View):
 
 class CartView(CartMixin, View):
     def get(self, request, *args, **kwargs):
-        #categories = Category.objects.get_categories_for_left_sidebar()
         categories = GameCategory.objects.all()
         context = {
             'cart': self.cart,
@@ -179,7 +170,7 @@ class CartView(CartMixin, View):
 
 class CheckOutView(CartMixin, View):
     def get(self, request, *args, **kwargs):
-        #categories = Category.objects.get_categories_for_left_sidebar()
+        # categories = Category.objects.get_categories_for_left_sidebar()
         categories = GameCategory.objects.all()
         form = OrderForm(request.POST or None)
         context = {
