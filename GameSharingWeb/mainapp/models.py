@@ -173,7 +173,7 @@ class CartGame(models.Model):
     final_price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Общая цена')
 
     def __str__(self):
-        return "Продукт: {} (для корзины)".format(self.content_object.title)
+        return "Продукт: {} (для корзины)".format(self.game.title)
 
     def save(self, *args, **kwargs):
         self.final_price = self.qty * self.game.price
@@ -256,72 +256,72 @@ class GameGetProducts:
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-# class BagRoom(models.Model):
-#     name = models.CharField(max_length=255, verbose_name='Название')
-#     address = models.CharField(max_length=255, verbose_name='Адрес')
-#     slug = models.SlugField(unique=True)
-#     rent = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Стоимость аренды')
-#     cells = models.DecimalField(max_digits=4, decimal_places=0, verbose_name='Количество ячеек')
-#     free_cells = models.DecimalField(max_digits=4, decimal_places=0, verbose_name='Количество свободных ячеек')
-#
-#     def __str__(self):
-#         return self.name
-#
-#
-# class Event(models.Model):
-#     TYPE_BOOKED = 'booked'
-#     TYPE_PASS_CHECK = 'passed check'
-#     TYPE_PASS_CHECK_EMPLOYEE = 'passed check employee'
-#     TYPE_NO_PASS_CHECK = 'no passed check'
-#     TYPE_NO_PASS_CHECK_EMPLOYEE = 'no passed check employee'
-#     TYPE_START_RENT = 'start rent'
-#     TYPE_FINISH_RENT = 'finish rent'
-#     TYPE_BUY = 'buy'
-#
-#     TYPE_CHOICES = (
-#         (TYPE_BOOKED, 'Игра забронирована'),
-#         (TYPE_PASS_CHECK, 'Игра прошла проверку клиентом'),
-#         (TYPE_PASS_CHECK_EMPLOYEE, 'Игра прошла проверку сотрудником'),
-#         (TYPE_NO_PASS_CHECK, 'Игра НЕ прошла проверку клиентом'),
-#         (TYPE_NO_PASS_CHECK_EMPLOYEE, 'Игра НЕ прошла проверку сотрудником'),
-#         (TYPE_START_RENT, 'Начало бронирования'),
-#         (TYPE_FINISH_RENT, 'Конец бронирования'),
-#         (TYPE_BUY, 'Купили игру')
-#     )
-#     slug = models.SlugField(unique=True)
-#     status = models.CharField(max_length=100, verbose_name='Тип события', choices=TYPE_CHOICES, blank=True)
-#     game_box = models.ForeignKey('GameBox', verbose_name='Игра', on_delete=models.CASCADE, null=True)
-#     #rent = models.ForeignKey('Rent', verbose_name='Аренда', on_delete=models.CASCADE, null=True)
+class BagRoom(models.Model):
+    name = models.CharField(max_length=255, verbose_name='Название')
+    address = models.CharField(max_length=255, verbose_name='Адрес')
+    slug = models.SlugField(unique=True)
+    rent = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Стоимость аренды')
+    cells = models.DecimalField(max_digits=4, decimal_places=0, verbose_name='Количество ячеек')
+    free_cells = models.DecimalField(max_digits=4, decimal_places=0, verbose_name='Количество свободных ячеек')
+
+    def __str__(self):
+        return self.name
 
 
-# class Rent(models.Model):
-#     STATUS_GAME_BOOKED = 'game_booked'
-#     STATUS_DEPOSIT_PAY = 'deposit_pay'
-#     STATUS_GAME_RENT = 'game_rent'
-#     STATUS_RENT_END = 'rent_end'
-#     STATUS_DEPOSIT_RETURN = 'deposit_return'
-#
-#     STATUS_CHOICES = (
-#         (STATUS_GAME_BOOKED, 'Клиент забронировал игры'),
-#         (STATUS_DEPOSIT_PAY, 'Клиент внес депозит'),
-#         (STATUS_GAME_RENT, 'Клиент арендовал игры'),
-#         (STATUS_RENT_END, 'клиент вернул игры'),
-#         (STATUS_DEPOSIT_RETURN, 'Мы вернули депозит')
-#     )
-#
-#     customer = models.ForeignKey(Customer, verbose_name='Покупатель', related_name='related_orders',
-#                                  on_delete=models.CASCADE)
-#     status = models.CharField(max_length=100, verbose_name='Статус аренды', choices=STATUS_CHOICES,
-#                               default=STATUS_GAME_BOOKED)
-#     booked_time = models.DateTimeField(auto_now=True, verbose_name='Дата/время начала брони')
-#     rent_time_start = models.DateTimeField(auto_now=True, verbose_name='Дата/время начала аренды')
-#     rent_time_finish = models.DateTimeField(auto_now=True, verbose_name='Дата/время окончания аренды')
-#
-#     rent = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Общая стоимость аренды')
-#     booked = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Общая стоимость брони')
-#     deposit = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Общая стоимость залога')
-#
-#     cart = models.ForeignKey(Cart, verbose_name='Корзина', on_delete=models.CASCADE, null=True, blank=True)
-#
-#     def __str__(self):
-#         return str(self.id)
+class Event(models.Model):
+    TYPE_BOOKED = 'booked'
+    TYPE_PASS_CHECK = 'passed check'
+    TYPE_PASS_CHECK_EMPLOYEE = 'passed check employee'
+    TYPE_NO_PASS_CHECK = 'no passed check'
+    TYPE_NO_PASS_CHECK_EMPLOYEE = 'no passed check employee'
+    TYPE_START_RENT = 'start rent'
+    TYPE_FINISH_RENT = 'finish rent'
+    TYPE_BUY = 'buy'
+
+    TYPE_CHOICES = (
+        (TYPE_BOOKED, 'Игра забронирована'),
+        (TYPE_PASS_CHECK, 'Игра прошла проверку клиентом'),
+        (TYPE_PASS_CHECK_EMPLOYEE, 'Игра прошла проверку сотрудником'),
+        (TYPE_NO_PASS_CHECK, 'Игра НЕ прошла проверку клиентом'),
+        (TYPE_NO_PASS_CHECK_EMPLOYEE, 'Игра НЕ прошла проверку сотрудником'),
+        (TYPE_START_RENT, 'Начало бронирования'),
+        (TYPE_FINISH_RENT, 'Конец бронирования'),
+        (TYPE_BUY, 'Купили игру')
+    )
+    slug = models.SlugField(unique=True)
+    status = models.CharField(max_length=100, verbose_name='Тип события', choices=TYPE_CHOICES, blank=True)
+    game_box = models.ForeignKey('GameBox', verbose_name='Игра', on_delete=models.CASCADE, null=True)
+    rent = models.ForeignKey('Rent', verbose_name='Аренда', on_delete=models.CASCADE, null=True)
+
+
+class Rent(models.Model):
+    STATUS_GAME_BOOKED = 'game_booked'
+    STATUS_DEPOSIT_PAY = 'deposit_pay'
+    STATUS_GAME_RENT = 'game_rent'
+    STATUS_RENT_END = 'rent_end'
+    STATUS_DEPOSIT_RETURN = 'deposit_return'
+
+    STATUS_CHOICES = (
+        (STATUS_GAME_BOOKED, 'Клиент забронировал игры'),
+        (STATUS_DEPOSIT_PAY, 'Клиент внес депозит'),
+        (STATUS_GAME_RENT, 'Клиент арендовал игры'),
+        (STATUS_RENT_END, 'клиент вернул игры'),
+        (STATUS_DEPOSIT_RETURN, 'Мы вернули депозит')
+    )
+
+    customer = models.ForeignKey(Customer, verbose_name='Покупатель', related_name='related_rent',
+                                 on_delete=models.CASCADE)
+    status = models.CharField(max_length=100, verbose_name='Статус аренды', choices=STATUS_CHOICES,
+                              default=STATUS_GAME_BOOKED)
+    booked_time = models.DateTimeField(auto_now=True, verbose_name='Дата/время начала брони')
+    rent_time_start = models.DateTimeField(auto_now=True, verbose_name='Дата/время начала аренды')
+    rent_time_finish = models.DateTimeField(auto_now=True, verbose_name='Дата/время окончания аренды')
+
+    rent = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Общая стоимость аренды')
+    booked = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Общая стоимость брони')
+    deposit = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Общая стоимость залога')
+
+    cart = models.ForeignKey(Cart, verbose_name='Корзина', on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self):
+        return str(self.id)
